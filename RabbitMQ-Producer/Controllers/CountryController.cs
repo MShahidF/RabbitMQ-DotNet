@@ -31,14 +31,45 @@ namespace RabbitMQ_Producer.Controllers
       }
     }
 
-    [HttpPost]
-    public IActionResult CreateCountry([FromBody] Country country)
+    [HttpPost("Publish")]
+    public IActionResult Publish([FromBody] Country country)
     {
       try
       {
         CountryRepository.Countries.Add(country);
-
         _messagePublisher.SendMessage(country);
+
+        return Ok();
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, ex.Message);
+      }
+    }
+
+    [HttpPost("Publish-Fanout-Exchange")]
+    public IActionResult PublishFanout([FromBody] Country country)
+    {
+      try
+      {
+        CountryRepository.Countries.Add(country);
+        _messagePublisher.SendMessageFanout(country);
+
+        return Ok();
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, ex.Message);
+      }
+    }
+
+    [HttpPost("Publish-Direct-Exchange")]
+    public IActionResult PublishDirect([FromBody] Country country)
+    {
+      try
+      {
+        CountryRepository.Countries.Add(country);
+        _messagePublisher.SendMessageDirect(country);
 
         return Ok();
       }
